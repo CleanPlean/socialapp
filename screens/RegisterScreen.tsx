@@ -2,12 +2,13 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Input, Button } from 'react-native-elements';
 import { auth } from '../firebase'
+import { RootTabScreenProps } from '../types';
+
+import { StyleSheet } from 'react-native';
+import { View } from '../components/Themed';
 
 
-import { View, Text, StyleSheet } from 'react-native';
-
-
-const RegisterScreen = ({navigation}) => {
+const RegisterScreen = ({ navigation }: RootTabScreenProps<'RegisterScreen'>) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -36,7 +37,6 @@ const RegisterScreen = ({navigation}) => {
                     alert(error.message)
                 });
                 navigation.popToTop();
-                // ...
             })
             .catch((error) => {
                 var errorMessage = error.message;
@@ -62,7 +62,7 @@ const RegisterScreen = ({navigation}) => {
             />
             <Input
                 placeholder='Enter your password'
-                label='Passworddd'
+                label='Password'
                 leftIcon={{ type: 'material', name: 'lock' }}
                 value={password} onChangeText={text => setPassword(text)}
                 secureTextEntry

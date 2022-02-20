@@ -18,6 +18,7 @@ import HomeScreen from '../screens/HomeScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
+import PostScreen from '../screens/PostScreen';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -71,13 +72,21 @@ function BottomTabNavigator() {
         })}
       />
       <BottomTab.Screen
+        name="PostScreen"
+        component={PostScreen}
+        options={({ navigation }: RootTabScreenProps<'PostScreen'>) => ({
+          title: 'Post',
+          tabBarIcon: ({ color }) => <TabBarIcon name="camera" color={color} />
+        })}
+      />
+      {/* <BottomTab.Screen
         name="MessagesScreen"
         component={MessagesScreen}
         options={{
           title: 'Messages',
           tabBarIcon: ({ color }) => <TabBarIcon name="wechat" color={color} />,
         }}
-      />
+      /> */}
     </BottomTab.Navigator>
   );
 }

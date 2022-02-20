@@ -8,6 +8,8 @@ import { useState, useLayoutEffect, useCallback, useEffect } from 'react';
 import { auth, db } from '../firebase'
 import { RootTabScreenProps } from '../types';
 import { GiftedChat } from 'react-native-gifted-chat';
+import { removeItemValue } from '../utils/asyncStorage';
+import { USER_KEY } from '../constants';
 
 export default function MessagesScreen({ navigation }: RootTabScreenProps<'MessagesScreen'>) {
 
@@ -16,7 +18,7 @@ export default function MessagesScreen({ navigation }: RootTabScreenProps<'Messa
   const signOut = () => {
     auth.signOut().then(() => {
       // Sign-out successful.
-      //TODO: Log out reducer
+      removeItemValue(USER_KEY);
     }).catch((error) => {
       // An error happened.
       alert(error)

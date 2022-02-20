@@ -5,6 +5,7 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import { ColorSchemeName, Pressable } from 'react-native';
 
+
 const Stack = createStackNavigator();
 
 export default function Auth({ colorScheme }: { colorScheme: ColorSchemeName }) {

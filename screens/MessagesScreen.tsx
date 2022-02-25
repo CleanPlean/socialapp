@@ -5,38 +5,51 @@ import { TouchableOpacity } from 'react-native';
 import { Text, View } from '../components/Themed';
 import { Avatar, Icon } from 'react-native-elements';
 import { useState, useLayoutEffect, useCallback, useEffect } from 'react';
-import { auth, db } from '../firebase'
+import { getAuth } from "firebase/auth";
+import { getFirestore, addDoc, collection, getDocs, doc, orderBy, query } from "firebase/firestore";
 import { RootTabScreenProps } from '../types';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { removeItemValue } from '../utils/asyncStorage';
 import { USER_KEY } from '../constants';
+import { app } from "../firebase";
+
+interface User {
+  _id: string,
+  createdAt: Object,
+  text: string,
+  user: Object
+}
 
 export default function MessagesScreen({ navigation }: RootTabScreenProps<'MessagesScreen'>) {
-
-  const [messages, setMessages] = useState([]);
+  const db = getFirestore();
+  const [messages, setMessages] = useState<User[]>([]);
+  const auth = getAuth();
 
   const signOut = () => {
     auth.signOut().then(() => {
       // Sign-out successful.
-      removeItemValue(USER_KEY);
     }).catch((error) => {
       // An error happened.
       alert(error)
     });
   }
+  // _id: doc.data()._id,
+  // createdAt: doc.data().createdAt.toDate(),
+  // text: doc.data().text,
+  // user: doc.data().user
 
   useLayoutEffect(() => {
-    const unsubscribe = db.collection('chats').orderBy('createdAt', 'desc').onSnapshot(snapshot => setMessages(
-      snapshot.docs.map(doc => ({
-        _id: doc.data()._id,
-        createdAt: doc.data().createdAt.toDate(),
-        text: doc.data().text,
-        user: doc.data().user
-      }))
-    ))
+    const _retreiveMessages = async () => {
+      const q = query(collection(db, "chats"), orderBy("createdAt", 'desc'));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data());
+      });
+    }
 
-    return unsubscribe;
-  }, [])
+    _retreiveMessages();
+  })
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -61,7 +74,7 @@ export default function MessagesScreen({ navigation }: RootTabScreenProps<'Messa
     })
   }, [navigation])
 
-  const onSend = useCallback((messages = []) => {
+  const onSend = useCallback(async (messages = []) => {
     setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
     const {
       _id,
@@ -70,12 +83,13 @@ export default function MessagesScreen({ navigation }: RootTabScreenProps<'Messa
       user,
     } = messages[0]
 
-    db.collection('chats').add({
+    const messageRef = await addDoc(collection(db, "chats"), {
       _id,
       createdAt,
       text,
       user,
-    })
+    });
+
   }, [])
 
   return (

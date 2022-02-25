@@ -1,36 +1,26 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Input, Button } from 'react-native-elements';
-import { auth } from '../firebase'
+import { getAuth, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged  } from "firebase/auth";
 import { RootTabScreenProps } from '../types';
 
 import { StyleSheet } from 'react-native';
 import { View } from '../components/Themed';
-
 
 const RegisterScreen = ({ navigation }: RootTabScreenProps<'RegisterScreen'>) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [imageUrl, setImageUrl] = useState('');
-
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(function (user) {
-            if (user) {
-                navigation.replace('Chat');
-            } else {
-                // No user is signed in.
-            }
-        });
-        return unsubscribe;
-    }, [])
+    const auth = getAuth();
 
     const register = () => {
-        auth.createUserWithEmailAndPassword(email, password)
+        createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 // Signed in
                 var user = userCredential.user;
-                user.updateProfile({
+                
+                updateProfile(auth.currentUser, {
                     displayName: name,
                     photoURL: imageUrl ? imageUrl : "https://www.trackergps.com/canvas/images/icons/avatar.jpg"
                 }).catch(function (error) {

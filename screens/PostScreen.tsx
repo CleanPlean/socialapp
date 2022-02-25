@@ -4,16 +4,10 @@ import { Button } from 'react-native-elements';
 import { Text, View } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
 import * as ImagePicker from "expo-image-picker";
-import { getApps, initializeApp } from "firebase/app";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { firebaseConfig } from '../firebase';
+
 import uuid from "uuid";
 import * as Clipboard from "expo-clipboard";
-
-// Editing this file with fast refresh will reinitialize the app on every refresh, let's not do that
-if (!getApps().length) {
-  initializeApp(firebaseConfig);
-}
 
 export default function PostScreen({ navigation }: RootTabScreenProps<'PostScreen'>) {
     const [state, setState] = useState({

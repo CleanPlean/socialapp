@@ -1,23 +1,28 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Input, Button } from 'react-native-elements';
-import { auth } from '../firebase';
+import { getApps, initializeApp } from "firebase/app";
+import { getAuth, signInWithEmailAndPassword,  } from "firebase/auth";
 import { StyleSheet } from 'react-native';
+import { firebaseConfig } from '../firebase';
 import { View } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
+
 
 const LoginScreen = ({ navigation }: RootTabScreenProps<'LoginScreen'>) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const auth = getAuth();
 
     const signIn = () => {
-        auth.signInWithEmailAndPassword(email, password)
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+            })
             .catch((error) => {
                 var errorMessage = error.message;
                 alert(errorMessage)
             });
-
-        navigation.popToTop();
     }
 
     return (

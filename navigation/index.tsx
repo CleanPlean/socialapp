@@ -79,14 +79,14 @@ function BottomTabNavigator() {
           tabBarIcon: ({ color }) => <TabBarIcon name="camera" color={color} />
         })}
       />
-      {/* <BottomTab.Screen
+      <BottomTab.Screen
         name="MessagesScreen"
         component={MessagesScreen}
         options={{
           title: 'Messages',
           tabBarIcon: ({ color }) => <TabBarIcon name="wechat" color={color} />,
         }}
-      /> */}
+      />
     </BottomTab.Navigator>
   );
 }

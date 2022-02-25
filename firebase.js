@@ -1,10 +1,21 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "AIzaSyAXbs8uBQYAL4ZeQDAwnQerlKuVWGRG1Xo",
-    authDomain: "simplechat-32e5f.firebaseapp.com",
-    projectId: "simplechat-32e5f",
-    storageBucket: "simplechat-32e5f.appspot.com",
-    messagingSenderId: "217957332184",
-    appId: "1:217957332184:web:33ad4f8bc38bc33b4213ad"
+  apiKey: "AIzaSyCMS98yG9-KMy_U3xUDrAzVYxqvja0I2_g",
+  authDomain: "socialapp-298522.firebaseapp.com",
+  projectId: "socialapp-298522",
+  storageBucket: "socialapp-298522.appspot.com",
+  messagingSenderId: "367559535628",
+  appId: "1:367559535628:web:f68baabd2fbaac85559229",
+  measurementId: "G-KBCMSS1EMD"
 };
 
-export { firebaseConfig };
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+export { app , firebaseConfig};

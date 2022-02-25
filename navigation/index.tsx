@@ -83,6 +83,7 @@ function BottomTabNavigator() {
         name="MessagesScreen"
         component={MessagesScreen}
         options={{
+          tabBarHideOnKeyboard:true,
           title: 'Messages',
           tabBarIcon: ({ color }) => <TabBarIcon name="wechat" color={color} />,
         }}

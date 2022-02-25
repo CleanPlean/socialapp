@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView } from 'react-native';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { TouchableOpacity } from 'react-native';
@@ -6,13 +6,13 @@ import { Text, View } from '../components/Themed';
 import { Avatar, Icon } from 'react-native-elements';
 import { useState, useLayoutEffect, useCallback, useEffect } from 'react';
 import { getAuth } from "firebase/auth";
-import { getFirestore, addDoc, collection, getDocs, doc, orderBy, query } from "firebase/firestore";
+import { getFirestore, addDoc, collection, getDocs, doc, onSnapshot, orderBy, query } from "firebase/firestore";
 import { RootTabScreenProps } from '../types';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { removeItemValue } from '../utils/asyncStorage';
 import { USER_KEY } from '../constants';
 import { app } from "../firebase";
-
+import AccessoryBar from '../components/Chat/AccessoryBar';
 interface User {
   _id: string,
   createdAt: Object,
@@ -24,6 +24,8 @@ export default function MessagesScreen({ navigation }: RootTabScreenProps<'Messa
   const db = getFirestore();
   const [messages, setMessages] = useState<User[]>([]);
   const auth = getAuth();
+  const [isLoading, setIsLoadingEarlier] = useState<Boolean>(false);
+  const [isTyping, setIsTyping] = useState<Boolean>(false);
 
   const signOut = () => {
     auth.signOut().then(() => {
@@ -33,23 +35,44 @@ export default function MessagesScreen({ navigation }: RootTabScreenProps<'Messa
       alert(error)
     });
   }
-  // _id: doc.data()._id,
-  // createdAt: doc.data().createdAt.toDate(),
-  // text: doc.data().text,
-  // user: doc.data().user
+
+  const _renderAccessory = () => (
+    <AccessoryBar onSend={onSend} isTyping={setIsTyping(true)} />
+  )
+
+  const _onLoadEarlier = () => {
+    setIsLoadingEarlier(true);
+  };
+
+  const _parsePatterns = (_linkStyle: any) => {
+    return [
+      {
+        pattern: /#(\w+)/,
+        style: { textDecorationLine: 'underline', color: 'darkorange' },
+        onPress: () => Linking.openURL('http://gifted.chat'),
+      },
+    ]
+  }
 
   useLayoutEffect(() => {
-    const _retreiveMessages = async () => {
-      const q = query(collection(db, "chats"), orderBy("createdAt", 'desc'));
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, " => ", doc.data());
-      });
-    }
+    const q = query(collection(db, "chats"), orderBy("createdAt", 'desc'));
 
-    _retreiveMessages();
-  })
+    const unsuscribe = onSnapshot(q, (querySnapshot) => {
+      const messages_from_db: Array<User> = [];
+      querySnapshot.forEach((doc) => {
+        messages_from_db.push({
+          _id: doc.data()._id,
+          createdAt: doc.data().createdAt.toDate(),
+          text: doc.data().text,
+          user: doc.data().user
+        })
+      })
+      setMessages(messages_from_db);
+
+    })
+
+    return unsuscribe;
+  }, [])
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -93,16 +116,25 @@ export default function MessagesScreen({ navigation }: RootTabScreenProps<'Messa
   }, [])
 
   return (
-    <GiftedChat
-      messages={messages}
-      showAvatarForEveryMessage={true}
-      onSend={messages => onSend(messages)}
-      user={{
-        _id: auth?.currentUser?.email,
-        name: auth?.currentUser?.displayName,
-        avatar: auth?.currentUser?.photoURL
-      }}
-    />
+    <View style={{ flex: 1 }}>
+
+      <GiftedChat
+        messages={messages}
+        showAvatarForEveryMessage={false}
+        alwaysShowSend
+        isLoadingEarlier={false}
+        onSend={messages => onSend(messages)}
+        scrollToBottom
+        onLongPressAvatar={user => alert(JSON.stringify(user))}
+        isTyping={isTyping}
+        renderAccessory={Platform.OS === 'web' ? null : _renderAccessory}
+        user={{
+          _id: auth?.currentUser?.email,
+          name: auth?.currentUser?.displayName,
+          avatar: auth?.currentUser?.photoURL
+        }}
+      />
+    </View>
   )
 }
 

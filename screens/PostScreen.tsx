@@ -23,7 +23,7 @@ export default function PostScreen({ navigation }: RootTabScreenProps<'PostScree
                 } = await ImagePicker.requestMediaLibraryPermissionsAsync();         
                                 
                 if (status !== "granted") {
-                    // alert("Sorry, we need camera roll permissions to make this work!");
+                    alert("Sorry, we need camera roll permissions to make this work!");
                 }
             }
         }
